@@ -4,6 +4,8 @@ const { validationResult } = require("express-validator"); // додаємо м�
 const HttpError = require("../models/http-error");
 const getCoordsForAddress = require("../util/location");
 
+const Place = require('../models/place');
+
 let DUMMY_PLACES = [
   {
     id: "p1",
@@ -62,17 +64,23 @@ const createPlace = async (req, res, next) => {
     return next(error); // Прериваємо код і перенаправляємо помилку далі в нашу спеціальну функцію
   }
 
-  const createdPlace = {
-    id: uuidv4(),
+  const createdPlace = new Place({
     title,
     description,
-    location: coordinates,
     address,
-    creator,
-  };
+    location: coordinates,
+    image:
+    creator
+  });
 
-  DUMMY_PLACES.push(createdPlace); //за допомогою функції push додаємо до масиву обєкт
-
+  try {
+    await createdPlace.save(); // save функція яка зберігає щось в БД 
+  } catch (err) {
+    const error = new HttpError(
+      'Creating place failed, try again', 500
+    )
+    return next(error);
+  }
   res.status(201).json({ place: createdPlace }); // код 201 - за конвецією, якщо ми щось додаємо
 };
 
