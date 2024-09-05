@@ -69,7 +69,7 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     location: coordinates,
-    image:
+    image: 'https://treeplantation.com/images/articles/banana-tree.png',
     creator
   });
 
